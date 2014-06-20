@@ -17,7 +17,6 @@ import subprocess
 import multiprocessing
 
 
-VERSION = "29.01.14"
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -310,7 +309,7 @@ def main(args):
   
   m2 = RandomByteMutator()
   m2.max_length = 4
-  m2.max_mutations = 4
+  m2.max_mutations = 8
   
   fuzzer.add_mutator(m1)
   #fuzzer.add_mutator(m2)
@@ -324,24 +323,26 @@ def main(args):
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(
-    description='Fuzzer: OpenH264',
-    prefix_chars='-',
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument('-decoder', dest='decoder', action='store_true', default=False)
-  parser.add_argument('-encoder', dest='encoder', action='store_true', default=False)
-  parser.add_argument('-decbin', dest='decbin', metavar='path', default='./h264dec')
-  parser.add_argument('-encbin', dest='encbin', metavar='path', default='./h264enc')
-  parser.add_argument('-count', dest='count', metavar='#', type=int, default=sys.maxint)
-  parser.add_argument('-bucket', dest='bucket', metavar='path', default='bucket')
-  parser.add_argument('-samples', dest='samples', metavar='path', default=os.path.join(ROOT, "samples/*.*"))
-  parser.add_argument('-resources', dest='resources', metavar='path', default=os.path.join(ROOT, "resources"))
-  parser.add_argument('-symbolizer', dest='symbolizer', metavar='path', default=os.path.join(ROOT, 'symbolize.py'))
-  parser.add_argument('-ubsan', dest='ubsan', action='store_true', default=False)
-  parser.add_argument('-log', dest='loglevel', type=int, default=20)
-  parser.add_argument('-worker', dest='worker', metavar='#', type=int, default=1)
+  parser = argparse.ArgumentParser(description='Fuzzer: OpenH264',
+                                   prefix_chars='-',
+                                   add_help=False,
+                                   formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  parser.add_argument('-decoder', action='store_true', default=False, help="fuzz decoder")
+  parser.add_argument('-encoder', action='store_true', default=False, help="fuzz encoder")
+  parser.add_argument('-decbin', metavar='path', default='./h264dec', help=" ")
+  parser.add_argument('-encbin', metavar='path', default='./h264enc', help=" ")
+  parser.add_argument('-count', metavar='#', type=int, default=sys.maxint, help="")
+  parser.add_argument('-bucket', metavar='path', default='bucket', help=" ")
+  parser.add_argument('-samples', metavar='path', default=os.path.join(ROOT, "samples/*.*"), help=" ")
+  parser.add_argument('-resources', metavar='path', default=os.path.join(ROOT, "resources"), help=" ")
+  parser.add_argument('-symbolizer', metavar='path', default=os.path.join(ROOT, 'symbolize.py'), help=" ")
+  parser.add_argument('-ubsan', action='store_true', default=False, help=" ")
+  parser.add_argument('-loglevel', metavar="#", type=int, default=20, help=" ")
+  parser.add_argument('-workers', metavar='#', type=int, default=1, help=" ")
+  parser.add_argument('-h', '-help', '--help', action='help', help=argparse.SUPPRESS)
+  parser.add_argument('-version', action='version', version='%(prog)s 1.0', help=argparse.SUPPRESS)
   args = parser.parse_args()
 
-  for _ in range(args.worker):
+  for _ in range(args.workers):
     p = multiprocessing.Process(target=main, args=(args,))
     p.start()
