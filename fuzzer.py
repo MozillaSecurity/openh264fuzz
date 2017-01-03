@@ -255,6 +255,7 @@ class OpenH264(Fuzzer):
       fuzzed_buffer = self.mutate(sample_buffer)
       testcase = tempfile.NamedTemporaryFile()
       testcase.write(fuzzed_buffer)
+      testcase.flush()
       yuv = tempfile.NamedTemporaryFile()
       p = subprocess.Popen([self.decbin, testcase.name, yuv.name],
                            stdout=subprocess.PIPE, 
